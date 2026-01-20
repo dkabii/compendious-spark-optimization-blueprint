@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  spark-master:
+    build: .
+    hostname: spark-master
+    container_name: spark-master
+    command: /start-master.sh
+    ports:
+      - "7077:7077"   # Spark cluster
+      - "8080:8080"   # Master UI
+
+  spark-worker:
+    build: .
+    depends_on:
+      - spark-master
+    command: /start-worker.sh
+    environment:
+      - SPARK_MASTER_URL=spark://spark-master:7077
+    deploy:
+      replicas: 2
+    ports:
+      - "8081"
